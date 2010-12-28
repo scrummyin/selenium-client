@@ -1,7 +1,7 @@
 require "rubygems"
-gem "rspec", ">=1.2.8"
-require 'spec'
-require 'spec/example/example_group'
+gem "rspec", ">=2.0"
+require 'rspec/core'
+require 'rspec/core/example'
 
 #
 # Monkey-patch RSpec Example Group so that we can track whether an
@@ -19,51 +19,28 @@ require 'spec/example/example_group'
 #   a way to correlate file names between generation and 
 #   reporting time.
 #
-module Spec
-  module Example
-    module ExampleMethods
+module RSpec
+  module Core
+    class ExampleGroup
 
       attr_reader :execution_error
-
-      remove_method :execute
-      def execute(run_options, instance_variables) # :nodoc:
-        @_proxy.options[:actual_example] = self
-        
-        run_options.reporter.example_started(@_proxy)
-        set_instance_variables_from_hash(instance_variables)
-        
-        @execution_error = nil
-        Timeout.timeout(run_options.timeout) do
-          begin
-            before_each_example
-            instance_eval(&@_implementation)
-          rescue Exception => e
-            @execution_error ||= e
-          end
-          begin
-            after_each_example
-          rescue Exception => e
-            @execution_error ||= e
-          end
-        end
-
-        run_options.reporter.example_finished(@_proxy.update(description), @execution_error)
-        success = @execution_error.nil? || ExamplePendingError === @execution_error
-      end
 
       def actual_failure?
         case execution_error
         when nil
           false
-        when Spec::Example::ExamplePendingError, 
-             Spec::Example::PendingExampleFixedError,
-             Spec::Example::NoDescriptionError
+        when RSpec::Core::PendingExampleFixedError
+             #RSpec::Example::ExamplePendingError, 
+             #RSpec::Example::PendingExampleFixedError,
+             #RSpec::Example::NoDescriptionError
           false
         else
           true
         end
       end
+    end
 
+    class Example
       def reporting_uid
         # backtrace is not reliable anymore using the implementation proc          
         Digest::MD5.hexdigest @_implementation.inspect
@@ -80,7 +57,7 @@ module Spec
           yield
         end
       end
- 
+
     end
 
     class ExampleProxy
