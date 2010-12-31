@@ -11,7 +11,7 @@ module Selenium
         end
 
         def self.inject_placeholder(content)
-          content + Selenium::RSpec::HtmlReport::PLACEHOLDER
+          content + Selenium::RSpec::Reporting::HtmlReport::PLACEHOLDER
         end
         
         def replace_placeholder_with_system_state_content(result, example)

@@ -23,10 +23,9 @@ module RSpec
   module Core
     class ExampleGroup
 
-      attr_reader :execution_error
 
       def actual_failure?
-        case execution_error
+        case example.exception
         when nil
           false
         when RSpec::Core::PendingExampleFixedError
@@ -41,9 +40,12 @@ module RSpec
     end
 
     class Example
+
+      attr_reader :exception
+
       def reporting_uid
         # backtrace is not reliable anymore using the implementation proc          
-        Digest::MD5.hexdigest @_implementation.inspect
+        Digest::MD5.hexdigest(metadata[:execution_result][:started_at].to_s+metadata[:full_description].to_s)
       end
 
       def pending_for_browsers(*browser_regexps, &block)

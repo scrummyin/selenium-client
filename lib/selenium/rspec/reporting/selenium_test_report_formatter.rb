@@ -16,9 +16,9 @@ require File.expand_path(File.dirname(__FILE__) + "/html_report")
 
 class SeleniumTestReportFormatter < RSpec::Core::Formatters::HtmlFormatter
 
-  def initialize(options, output)
+  def initialize(output)
     super
-    raise "Unexpected output type #{output.inspect}" unless output.kind_of?(String)
+    raise "Unexpected output type #{output.inspect}" unless output.kind_of?(String) || output.kind_of?(File)
     @@file_path_strategy = Selenium::RSpec::Reporting::FilePathStrategy.new(output)
   end
 
@@ -28,7 +28,7 @@ class SeleniumTestReportFormatter < RSpec::Core::Formatters::HtmlFormatter
     # prevents js and html validity errors
     example_group = Object.new
     def example_group.description; ""; end
-    example_group_started example_group
+    #example_group_started example_group
   end  
 
   def move_progress
@@ -39,11 +39,11 @@ class SeleniumTestReportFormatter < RSpec::Core::Formatters::HtmlFormatter
     Selenium::RSpec::Reporting::HtmlReport.inject_placeholder(super)
   end
 
-  def example_pending(example_proxy, message, deprecated_pending_location=nil)
+  def example_pending(example_proxy)
     super
   end
 
-  def example_failed(example, counter, failure)        
+  def example_failed(example)
     old_output = @output
     @output = StringIO.new
     super

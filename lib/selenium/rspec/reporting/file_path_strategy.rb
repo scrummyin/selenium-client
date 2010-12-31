@@ -13,13 +13,13 @@ module Selenium
         end
 
         def base_report_dir
-          @base_report_dir ||= File.dirname(File.expand_path(@final_report_file_path))
+          @base_report_dir ||= File.dirname((File.expand_path(@final_report_file_path) rescue @final_report_file_path.path))
         end
 
         def relative_dir
           return @relative_dir if @relative_dir
           
-          file_name_without_extension = File.basename(@final_report_file_path).sub(/\.[^\.]*$/, "")
+          file_name_without_extension = (File.basename(@final_report_file_path).sub(/\.[^\.]*$/, "") rescue File.basename(@final_report_file_path.path).sub(/\.[^\.]*$/, ""))
           @relative_dir ||=  "resources/" + file_name_without_extension
         end
 
