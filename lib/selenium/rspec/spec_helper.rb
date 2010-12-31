@@ -17,8 +17,6 @@ RSpec.configure do |config|
     end
 
     example.run
-    #puts "\n\n!!!!!! #{config.inspect}"#.examples[-1].metadata[:execution_result]}"
-    #puts "\n\n!!!!!! #{config.inspect}"#[-1].metadata.inspect}"
 
     begin 
       if actual_failure? 
